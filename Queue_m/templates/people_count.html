@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>People Count</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+        }
+        h1 {
+            color: #4CAF50;
+            margin-top: 20px;
+        }
+        img {
+            width: 80%;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 5px solid #4CAF50;
+        }
+        .back-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            font-size: 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Live People Count</h1>
+    <img src="{{ url_for('video_feed') }}" alt="People Counting Video Feed">
+    <br>
+    <a href="/employee" class="back-btn">Back to Employee Panel</a>
+</body>
+</html>

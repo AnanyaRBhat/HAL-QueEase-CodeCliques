@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Queue Management</title>
+    <style>
+        body {
+            background-color: #f5f5dc; /* Beige */
+            font-family: 'Times New Roman', Times, serif; /* Times New Roman */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 40px;
+            color: #4e4e4e;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        a, button {
+            font-size: 1.2rem;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            background-color: #6c4f2f; /* Brown */
+            transition: all 0.3s;
+            width: 200px;
+            text-align: center;
+        }
+        a:hover, button:hover {
+            background-color: #4e3620; /* Darker Brown */
+            transform: scale(1.1);
+        }
+        #queue {
+            margin-top: 30px;
+            width: 100%;
+        }
+        .queue-item {
+            background-color: #fff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            color: #333;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .queue-item p {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Smart Queue Management</h1>
+    
+    <div class="button-container">
+        <a href="/customer">Customer Interface</a>
+        <a href="/employee">Employee Interface</a>
+        <button onclick="viewQueue()">View Queue</button>
+    </div>
+
+    <div id="queue"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        function viewQueue() {
+            let counter = prompt("Enter the counter number to view the queue:");
+        
+            if (counter) {
+                axios.get(`/api/queue/status/${counter}`)
+                    .then(function(response) {
+                        let queueDiv = document.getElementById('queue');
+                        queueDiv.innerHTML = '';
+                        
+                        if (response.data.length > 0) {
+                            response.data.forEach(function(customer) {
+                                let estimatedTime = customer[5] || 'N/A'; // Get the correct estimated time from the backend
+                                
+                                queueDiv.innerHTML += `
+                                    <div class="queue-item">
+                                        <p><strong>Name:</strong> ${customer[0]}</p>
+                                        <p><strong>Estimated Waiting Time:</strong> ${estimatedTime} mins</p>
+                                    </div>
+                                `;
+                            });
+                        } else {
+                            queueDiv.innerHTML = '<p>No customers in the queue for this counter.</p>';
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Error loading queue:', error);
+                    });
+            }
+        }
+        
+    </script>
+</body>
+</html>

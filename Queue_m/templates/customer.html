@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Registration</title>
+    <style>
+        body {
+            background-color: #e9f7ff;
+            font-family: 'Times New Roman', Times, serif; /* Set font to Times New Roman */
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #003366;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        label {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .btn {
+            padding: 12px 20px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            width: 100%;
+        }
+        .btn:hover {
+            background-color: #004085;
+        }
+        .result-container {
+            margin-top: 30px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .result-container p {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        .error {
+            color: red;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Customer Registration</h1>
+        <label for="name">Enter Your Name: </label>
+        <input type="text" id="name" required><br>
+        <label for="phone">Enter Your Phone Number: </label>
+        <input type="text" id="phone" required><br>
+
+        <button class="btn" id="generateTokenBtn">Generate Token</button>
+
+        <div id="error-message" class="error"></div>
+    </div>
+
+    <div id="result" class="result-container" style="display: none;">
+        <p><strong>Your Token:</strong> <span id="token"></span></p>
+        <p><strong>Your Counter:</strong> <span id="counter"></span></p>
+        <p><strong>Estimated Waiting Time:</strong> <span id="estimated_time"></span> minutes</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.getElementById('generateTokenBtn').addEventListener('click', function() {
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const errorMessage = document.getElementById('error-message');
+            const resultDiv = document.getElementById('result');
+
+            // Reset error message and result display
+            errorMessage.textContent = '';
+            resultDiv.style.display = 'none';
+
+            // Validate name and phone
+            if (!name || !phone) {
+                errorMessage.textContent = 'Please fill in all fields.';
+                return;
+            }
+
+            const phoneRegex = /^[0-9]{10}$/; // Simple phone number validation
+            if (!phoneRegex.test(phone)) {
+                errorMessage.textContent = 'Please enter a valid 10-digit phone number.';
+                return;
+            }
+
+            // Send data to the backend
+            axios.post('/api/customer/register', { name, phone })
+                .then(function(response) {
+                    const data = response.data;
+                    document.getElementById('token').textContent = data.token;
+                    document.getElementById('counter').textContent = data.counter;
+                    document.getElementById('estimated_time').textContent = data.estimated_time;
+                    resultDiv.style.display = 'block';
+                })
+                .catch(function(error) {
+                    console.error('Error registering customer:', error);
+                });
+        });
+    </script>
+</body>
+</html>

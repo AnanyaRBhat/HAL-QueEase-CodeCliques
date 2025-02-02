@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Interface</title>
+    <style>
+        body {
+            background-color: #f7f7f7;
+            font-family: 'Times New Roman', Times, serif;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        label {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        input {
+            padding: 15px;
+            font-size: 18px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 15px 30px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            font-size: 18px;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        td {
+            background-color: #f9f9f9;
+        }
+        .action-btn {
+            padding: 10px 20px;
+            background-color: #ff5722;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .action-btn:hover {
+            background-color: #e64a19;
+        }
+        .count-btn {
+            background-color: #007BFF;
+            margin-top: 10px;
+        }
+        .count-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Employee Interface</h1>
+        <label for="counter">Enter Counter Number:</label>
+        <input type="number" id="counter" required>
+        <button class="btn" onclick="loadQueue()">Load Queue</button>
+
+        <!-- View People Count Button -->
+        <button class="btn count-btn" onclick="window.location.href='/people_count'">View People Count</button>
+
+        <div id="queue">
+            <!-- Queue will be populated here -->
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        function loadQueue() {
+            const counter = document.getElementById('counter').value;
+            axios.get(`/api/queue/status/${counter}`)
+                .then(function(response) {
+                    const queueDiv = document.getElementById('queue');
+                    queueDiv.innerHTML = '';
+
+                    if (response.data.length > 0) {
+                        let table = `
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Token</th>
+                                        <th>Name</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                        `;
+
+                        response.data.forEach(function(customer) {
+                            table += `
+                                <tr>
+                                    <td>${customer[2]}</td>
+                                    <td>${customer[0]}</td>
+                                    <td>${customer[4]}</td>
+                                    <td>
+                                        <button class="action-btn" onclick="updateStatus(${customer[2]}, 'completed')">Complete</button>
+                                        <button class="action-btn" onclick="updateStatus(${customer[2]}, 'pending')">Pending</button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+
+                        table += `</tbody></table>`;
+                        queueDiv.innerHTML = table;
+                    } else {
+                        queueDiv.innerHTML = '<p>No customers in the queue.</p>';
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Error loading queue:', error);
+                });
+        }
+
+        function updateStatus(token, status) {
+            axios.put('/api/queue/update', { token, status })
+                .then(function(response) {
+                    loadQueue();
+                })
+                .catch(function(error) {
+                    console.error('Error updating status:', error);
+                });
+        }
+    </script>
+</body>
+</html>

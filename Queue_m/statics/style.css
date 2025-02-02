@@ -1,0 +1,11 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    color: #4CAF50;
+}
+
+form input {
+    margin-bottom: 10px;
+}
